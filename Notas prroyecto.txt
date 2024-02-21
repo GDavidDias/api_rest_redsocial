@@ -1,0 +1,6 @@
+Creacion de proyecto en Node:
+-> npm init
+
+Instalamos dependencias:
+- Express: npm i express (framework de node, que nos permite crear rutas, trabajar con protocolo http, endopoints)
+- Mongoose: npm i mongoose (es un ODM que nos permite trabajar con la base de datos de forma sencilla, crea una capa de abstraccion de metodos que trabaja con mongo).
