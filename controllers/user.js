@@ -5,13 +5,14 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
 //Importar servicios
-const createToken = require("../services/jwt");
+const {createToken} = require("../services/jwt");
 
 
 //Acciones de prueba
 const pruebaUser = (req,res)=>{
     return res.status(200).send({
-        message: "mensaje enviado desde: controllers/user.js"
+        message: "mensaje enviado desde: controllers/user.js",
+        usuario: req.user
     })
 };
 
