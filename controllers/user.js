@@ -1,6 +1,12 @@
 //Importar dependencia y modulos
 const bcrypt = require("bcrypt");
+
+//Importar modelos
 const User = require("../models/user");
+
+//Importar servicios
+const createToken = require("../services/jwt");
+
 
 //Acciones de prueba
 const pruebaUser = (req,res)=>{
@@ -70,23 +76,70 @@ const register = async(req,res)=>{
 };
 
 
-const login = (req, res)=>{
+const login = async(req, res)=>{
     //Recoger parametros de body
+    const params = req.body;
 
-    //Buscar en BD si existe email o usuario
+    if(!params.email || !params.password){
+        return res.status(400).json({
+            status: "error",
+            message: "faltan datos por enviar"
+        })
+    };
 
-    //Comprobar su contraseña
+    try{
 
-    //Devolver Token
+        //Buscar en BD si existe email o usuario
+        let userFinder = await User.findOne({email: params.email})
+                                    //.select({password:0})  //uso el select para omitir la password en la busqueda del usuario
+                                    .exec();
 
-    //Devolver Datos de Usuario
+        if (!userFinder){
+            return res.status(404).json({
+                status: "error",
+                message: "No existe el usuario"
+            })
+        }
+        //Comprobar su contraseña
+        const pwd = bcrypt.compareSync(params.password, userFinder.password);
 
+        if(!pwd){
+            return res.status(400).json({
+                status: "error",
+                message: "No te has identificado correctamente",
+                
+            })
+        }
+
+        //Devolver Token
+        const token = createToken(userFinder);
 
     
-    return res.status(200).json({
-        status: "success",
-        message: "accion de login"
-    })
+        //Devolver Datos de Usuario
+        //Eliminar password de objeto
+        return res.status(200).json({
+            status: "success",
+            message: "Te has identificado correctamente",
+            user: {
+                id: userFinder._id,
+                name: userFinder.name,
+                nick: userFinder.nick
+            },
+            token
+        });
+    
+
+    }catch(error){
+        return res.status(404).json({
+            status: "error",
+            message: "Error en login",
+            error: error.message
+        })
+    }
+
+
+
+
 
 };
 
