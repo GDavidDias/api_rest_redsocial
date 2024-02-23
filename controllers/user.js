@@ -1,5 +1,6 @@
 //Importar dependencia y modulos
 const bcrypt = require("bcrypt");
+const mongoosePagination = require("mongoose-paginate-v2");
 
 //Importar modelos
 const User = require("../models/user");
@@ -150,7 +151,7 @@ const profile = async(req, res)=>{
     try{
         //Consulta para obtener datos de usuario
         const userFind = await User.findById(id)
-                                   .select({password:0, role:0})
+                                   .select({password:0, role:0}) //omito del find estas propiedades
                                    .exec();
         console.log(userFind);
     
@@ -175,15 +176,54 @@ const profile = async(req, res)=>{
             message: "Error en endpoint profile",
             error: error.message
         })
-    }
-
-
+    };
 };
+
+
+//?Listado de usuarios con paginacion, usando el plugin mongoose-paginate-v2 (https://www.npmjs.com/package/mongoose-paginate-v2)
+const list = async (req, res)=>{
+    //Controlar en que pagina estamos
+    let page = 1;
+    if(req.params.page){
+        page = req.params.page;
+    }
+    page = parseInt(page);
+
+    try{
+        //Consulta con mongoose paginate V2
+        let itemsPerPage = 3;
+    
+        let usersFind = await User.paginate({}, {page: page, limit: itemsPerPage});
+    
+        if(!usersFind){
+            return res.status(404).send({
+                status:"error",
+                message: "No hay usuarios disponibles",
+            });
+        };
+            
+        //Devolver el resutlado (posteriormente info de follow)
+        return res.status(200).send({
+            status:"success",
+            message: "ruta de listado de usuarios",
+            usersFind,
+        });
+
+    }catch(error){
+        return res.status(400).send({
+            status: "error",
+            message: "error en endpoint list",
+            error: error.message
+        })
+    };
+};
+
 
 //Exportar Acciones
 module.exports = {
     pruebaUser,
     register,
     login,
-    profile
+    profile,
+    list
 }

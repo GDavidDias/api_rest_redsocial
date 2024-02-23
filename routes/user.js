@@ -8,6 +8,7 @@ router.get("/prueba-usuario", auth, UserController.pruebaUser);
 router.post("/register", UserController.register)
 router.post("/login", UserController.login);
 router.get("/profile/:id", auth, UserController.profile);
+router.get("/list/:page?", auth, UserController.list);
 
 //exportar Router
 module.exports = router;
