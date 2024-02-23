@@ -108,16 +108,13 @@ const login = async(req, res)=>{
             return res.status(400).json({
                 status: "error",
                 message: "No te has identificado correctamente",
-                
             })
-        }
+        };
 
         //Devolver Token
         const token = createToken(userFinder);
-
     
-        //Devolver Datos de Usuario
-        //Eliminar password de objeto
+        //Devolver Datos de Usuario -> no muestro password en objeto
         return res.status(200).json({
             status: "success",
             message: "Te has identificado correctamente",
@@ -137,17 +134,56 @@ const login = async(req, res)=>{
             error: error.message
         })
     }
+};
 
 
+const profile = async(req, res)=>{
+    //Recibir el parametro del id de usuario por url
+    const id = req.params.id;
+    if(!id){
+        return res.status(404).send({
+            status: "error",
+            message: "Falta datos de id"
+        })
+    }
 
+    try{
+        //Consulta para obtener datos de usuario
+        const userFind = await User.findById(id)
+                                   .select({password:0, role:0})
+                                   .exec();
+        console.log(userFind);
+    
+        if(!userFind){
+            return res.status(404).send({
+                status: "error",
+                message: "Usuario no encontrado"
+            })
+        };
+    
+        //Devolver resultado
+        //Posteriormente: devolver informacion de follow
+        return res.status(200).send({
+            status:"success",
+            message: "Usuario encontrado",
+            usuario: userFind
+        })
+
+    }catch(error){
+        return res.status(400).send({
+            status: "error",
+            message: "Error en endpoint profile",
+            error: error.message
+        })
+    }
 
 
 };
-
 
 //Exportar Acciones
 module.exports = {
     pruebaUser,
     register,
-    login
+    login,
+    profile
 }
