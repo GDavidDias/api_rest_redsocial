@@ -219,25 +219,75 @@ const list = async (req, res)=>{
 };
 
 
-const update = (req, res)=>{
+const update = async (req, res)=>{
     //Recoger info de usuario a actualizar
-    let userToUpdate = req.user;
+    let userIdentity = req.user;
+    let userToUpdate = req.body;
 
     //Eliminar campos sobrantes
     delete userToUpdate.iat;
     delete userToUpdate.exp;
     delete userToUpdate.role;
+    delete userToUpdate.image;
+    // console.log("datos userIdentity: ", userIdentity);
+    // console.log("datos userToUpdate: ", userToUpdate);
 
-    //Comprobar si el usuario ya existe
+    try{
+        //Comprobar si el usuario ya existe
+        // console.log("ingresa a try")
+        let UserFind = await User.find({ $or: [
+            {email: userToUpdate.email.toLowerCase()},
+            {nick: userToUpdate.nick.toLowerCase()}
+        ] }).exec()
 
-    //Si viene password cifrarla
+        // console.log("userFind: ", UserFind);
 
-    //Buscar y actualizar usuario con nueva info
-    return res.status(200).send({
+        let userIsset = false;
+
+        UserFind.forEach(user=>{
+            // console.log("que trae user en foreach: ", user)
+            if(user && user._id != userIdentity.id) userIsset = true;
+        })
+
+        if(userIsset){
+        return res.status(200).json({
         status:"success",
-        message: "ruta de update de usuarios",
-        userToUpdate
-    });
+        message: "El usuario ya existe"
+        })
+        }
+
+        //Cifrar la contraseña
+        if(userToUpdate.password){
+            let pwd = await bcrypt.hash(userToUpdate.password, 10);
+            userToUpdate.password = pwd;
+        }
+
+    
+        //Buscar y actualizar usuario con nueva info
+        let userUpdated = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, {new:true});
+
+        if(!userUpdated){
+            return res.status(500).send({
+                status: "error", 
+                mensaje: "Error el usuario no se actualizo",
+            })
+        };
+
+        return res.status(200).send({
+            status:"success",
+            message: "ruta de update de usuarios",
+            user: userUpdated
+        });
+
+    }catch(error){
+        return res.status(400).send({
+            status: "error", 
+            mensaje: "Error en endpoint update",
+            error: error.message
+        })
+
+    }
+
 };
 
 
