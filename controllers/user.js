@@ -219,11 +219,34 @@ const list = async (req, res)=>{
 };
 
 
+const update = (req, res)=>{
+    //Recoger info de usuario a actualizar
+    let userToUpdate = req.user;
+
+    //Eliminar campos sobrantes
+    delete userToUpdate.iat;
+    delete userToUpdate.exp;
+    delete userToUpdate.role;
+
+    //Comprobar si el usuario ya existe
+
+    //Si viene password cifrarla
+
+    //Buscar y actualizar usuario con nueva info
+    return res.status(200).send({
+        status:"success",
+        message: "ruta de update de usuarios",
+        userToUpdate
+    });
+};
+
+
 //Exportar Acciones
 module.exports = {
     pruebaUser,
     register,
     login,
     profile,
-    list
+    list,
+    update
 }
