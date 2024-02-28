@@ -291,6 +291,15 @@ const update = async (req, res)=>{
 };
 
 
+const upload = (req, res)=>{
+
+    return res.status(200).send({
+        status: "success",
+        message: "subidad de imagenes"
+    })
+};
+
+
 //Exportar Acciones
 module.exports = {
     pruebaUser,
@@ -298,5 +307,6 @@ module.exports = {
     login,
     profile,
     list,
-    update
+    update,
+    upload
 }

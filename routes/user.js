@@ -10,6 +10,7 @@ router.post("/login", UserController.login);
 router.get("/profile/:id", auth, UserController.profile);
 router.get("/list/:page?", auth, UserController.list);
 router.put("/update", auth, UserController.update);
+router.post("/upload", auth, UserController.upload);
 
 //exportar Router
 module.exports = router;
