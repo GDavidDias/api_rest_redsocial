@@ -1,6 +1,7 @@
 //Importar dependencia y modulos
 const bcrypt = require("bcrypt");
 const mongoosePagination = require("mongoose-paginate-v2");
+const fs = require("fs");
 
 //Importar modelos
 const User = require("../models/user");
@@ -291,12 +292,54 @@ const update = async (req, res)=>{
 };
 
 
-const upload = (req, res)=>{
+const upload = async(req, res)=>{
+    //Recoger fichero de imagen y comprobar que existe
+    if(!req.file){
+        return res.status(404).send({
+            status: "error",
+            message: "Peticion no incluye imagen"
+        })
+    };
 
-    return res.status(200).send({
-        status: "success",
-        message: "subidad de imagenes"
-    })
+    //Conseguir nombre de archivo
+    let imagen = req.file.originalname;
+
+    //Sacar extension del archivo
+    const imageSplit = imagen.split("\.");
+    const extension = imageSplit[1].toLowerCase();
+
+    //Comprobar extension
+    if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif"){
+
+        //Borrar Archivo subido
+        const filePath = req.file.path;
+        const fileDelete = fs.unlinkSync(filePath);
+
+        //Devolver respuesta negtiva
+        return res.status(400).json({
+            status: "error",
+            message: "Extension de imagen invalida"
+        })
+    }
+
+    try{
+        //Si si es correcto, guardar imagen en bbdd
+        const userUpdate = await User.findOneAndUpdate({_id: req.user.id}, {image: req.file.filename},{new: true});
+    
+        //Devolver respuesta
+        return res.status(200).send({
+            status: "success",
+            user: userUpdate,
+            file: req.file,
+        })
+
+    }catch(error){
+        return res.status(400).send({
+            status: "error", 
+            mensaje: "Error en endpoint upload",
+            error: error.message
+        })
+    }
 };
 
 
