@@ -2,6 +2,7 @@
 const bcrypt = require("bcrypt");
 const mongoosePagination = require("mongoose-paginate-v2");
 const fs = require("fs");
+const path = require("path");
 
 //Importar modelos
 const User = require("../models/user");
@@ -338,10 +339,44 @@ const upload = async(req, res)=>{
             status: "error", 
             mensaje: "Error en endpoint upload",
             error: error.message
-        })
+        });
     }
 };
 
+const avatar = async(req, res)=>{
+    //SAcar el parametro de la url
+    const file = req.params.file;
+
+    //Montar el path de la imagen
+    const filePath = "./uploads/avatars/"+file;
+
+    try{
+        //Comprobar que archivo existe
+        await fs.stat(filePath, (err, exists)=>{
+            //Si no existe
+            if(!exists){
+                return res.status(404).send({
+                    status: "error",
+                    message: "La imagen no existe"
+                })
+            }
+    
+            //Si existe, devolver un file
+            return res.sendFile(path.resolve(filePath));
+            
+        });
+
+    }catch(error){
+        return res.status(400).send({
+            status: "error", 
+            mensaje: "Error en endpoint avatar",
+            error: error.message
+        });
+    }
+    
+
+
+};
 
 //Exportar Acciones
 module.exports = {
@@ -351,5 +386,6 @@ module.exports = {
     profile,
     list,
     update,
-    upload
+    upload,
+    avatar
 }
