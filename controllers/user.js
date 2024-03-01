@@ -361,7 +361,7 @@ const avatar = async(req, res)=>{
                 })
             }
     
-            //Si existe, devolver un file
+            //?Si existe, devolver un file
             return res.sendFile(path.resolve(filePath));
             
         });
