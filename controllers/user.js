@@ -372,8 +372,7 @@ const avatar = async(req, res)=>{
             mensaje: "Error en endpoint avatar",
             error: error.message
         });
-    }
-    
+    };
 
 
 };
