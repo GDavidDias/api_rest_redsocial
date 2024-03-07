@@ -49,6 +49,19 @@ const save = async(req, res)=>{
 
 
 //Accion de borrar un follow (dejar de seguir)
+const unfollow = (req, res)=>{
+    //Recoger id usuario identificado
+
+    //Recoger id de usuario a dejar de seguir
+
+    //Find de coincidencias y hacer remove
+    
+
+    return res.status(200).send({
+        status:"success",
+        identity: req.user
+    })
+};
 
 //Accion de listado de usuarios que estoy siguiendo
 
@@ -57,5 +70,6 @@ const save = async(req, res)=>{
 //Exportar Acciones
 module.exports = {
     pruebaFollow,
-    save
+    save,
+    unfollow
 }
