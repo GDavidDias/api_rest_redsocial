@@ -91,13 +91,27 @@ const unfollow = async (req, res)=>{
 
 };
 
-//Accion de listado de usuarios que estoy siguiendo
+//Accion de listado de usuarios que cualquier usuario esta siguiendo (siguiendo)
+const following = (req, res) => {
+    return res.status(200).send({
+        status:  "success",
+        message: "Listado de usuarios que estoy siguiendo"
+    });
+};
 
-//Accion de usuarios que me siguen
+//Accion de usuarios que siguen a cualquier otro usuario (soy seguido)
+const followers = (req, res) =>{
+    return res.status(200).send({
+        status:  "success",
+        message: "Listado de usuarios que me siguen"
+    });
+}
 
 //Exportar Acciones
 module.exports = {
     pruebaFollow,
     save,
-    unfollow
+    unfollow,
+    following,
+    followers
 }
