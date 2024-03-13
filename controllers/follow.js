@@ -93,6 +93,28 @@ const unfollow = async (req, res)=>{
 
 //Accion de listado de usuarios que cualquier usuario esta siguiendo (siguiendo)
 const following = (req, res) => {
+    //Sacar id de usuario identificado
+    const userId = req.user.id;
+
+    //Comprobar si llega id por parametro en url
+    if (req.params.id){
+        userId = req.params.id;
+    }
+
+    //Comprobar si llega la pagina, sino seria la pagina 1
+    let page = 1;
+
+    if(req.params.page){
+        page = req.params.page
+    }
+
+    //Usuarios por pagina que quiero mostrar
+    const itemsPerPage = 5;
+
+    //Find a follow, popular datos de los usuarios y paginar con mongoose paginate
+
+    //Sacar un array de ids de los suarios que me siguen y los que sigo 
+
     return res.status(200).send({
         status:  "success",
         message: "Listado de usuarios que estoy siguiendo"
