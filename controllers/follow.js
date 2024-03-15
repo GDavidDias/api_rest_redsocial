@@ -2,6 +2,9 @@
 const Follow = require("../models/follow");
 const User = require("../models/user");
 
+//Importar dependencias
+const mongoosePagination = require("mongoose-paginate-v2");
+
 //Acciones de prueba
 const pruebaFollow = (req,res)=>{
     return res.status(200).send({
@@ -92,9 +95,9 @@ const unfollow = async (req, res)=>{
 };
 
 //Accion de listado de usuarios que cualquier usuario esta siguiendo (siguiendo)
-const following = (req, res) => {
+const following = async(req, res) => {
     //Sacar id de usuario identificado
-    const userId = req.user.id;
+    let userId = req.user.id;
 
     //Comprobar si llega id por parametro en url
     if (req.params.id){
@@ -112,12 +115,18 @@ const following = (req, res) => {
     const itemsPerPage = 5;
 
     //Find a follow, popular datos de los usuarios y paginar con mongoose paginate
+    let follows = await Follow.find({user:userId}).populate("user followed","-password -role -__v").exec();
 
     //Sacar un array de ids de los suarios que me siguen y los que sigo 
 
     return res.status(200).send({
         status:  "success",
-        message: "Listado de usuarios que estoy siguiendo"
+        message: "Listado de usuarios que estoy siguiendo",
+        user: req.user.id,
+        follows: follows,
+        userId:userId,
+        page:page
+
     });
 };
 
