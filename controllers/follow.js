@@ -111,23 +111,47 @@ const following = async(req, res) => {
         page = req.params.page
     }
 
+    page = parseInt(page);
+
     //Usuarios por pagina que quiero mostrar
     const itemsPerPage = 5;
 
-    //Find a follow, popular datos de los usuarios y paginar con mongoose paginate
-    let follows = await Follow.find({user:userId}).populate("user followed","-password -role -__v").exec();
+    try{
+        //Find a follow, popular datos de los usuarios y paginar con mongoose paginate
+        let follows = await Follow
+        .paginate({},{page: page, limit: itemsPerPage, populate:"user followed", find:{user:userId}})
+        //.find({user:userId})
+        //.populate("user followed","-password -role -__v")
+        //.exec();
+    
+        //Paginar
+        if(!follows){
+            return res.status(404).send({
+                status:"error",
+                message: "No hay follows",
+            });
+        }
+        
 
-    //Sacar un array de ids de los suarios que me siguen y los que sigo 
+        //Sacar un array de ids de los suarios que me siguen y los que sigo 
+        return res.status(200).send({
+            status:  "success",
+            message: "Listado de usuarios que estoy siguiendo",
+            user: req.user.id,
+            follows: follows,
+            userId:userId,
+            page:page
+    
+        });
 
-    return res.status(200).send({
-        status:  "success",
-        message: "Listado de usuarios que estoy siguiendo",
-        user: req.user.id,
-        follows: follows,
-        userId:userId,
-        page:page
+    }catch(error){
+        return res.status(500).send({
+            status: "error",
+            message: "Error en listado de follows",
+            error: error.message
+        })
+    }
 
-    });
 };
 
 //Accion de usuarios que siguen a cualquier otro usuario (soy seguido)
