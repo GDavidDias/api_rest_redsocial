@@ -118,8 +118,9 @@ const following = async(req, res) => {
 
     try{
         //Find a follow, popular datos de los usuarios y paginar con mongoose paginate
-        let follows = await Follow
-        .paginate({},{page: page, limit: itemsPerPage, populate:"user followed", find:{user:userId}})
+        //await Follow.find({user:userId}).exec();
+        let query = {user:userId}
+        let follows = await Follow.paginate(query,{page: page, limit: itemsPerPage, populate:"followed"})
         //.find({user:userId})
         //.populate("user followed","-password -role -__v")
         //.exec();
