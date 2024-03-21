@@ -5,6 +5,9 @@ const User = require("../models/user");
 //Importar dependencias
 const mongoosePagination = require("mongoose-paginate-v2");
 
+//Importar Servicios
+const followService = require("../services/followService");
+
 //Acciones de prueba
 const pruebaFollow = (req,res)=>{
     return res.status(200).send({
@@ -135,13 +138,17 @@ const following = async(req, res) => {
         
 
         //Sacar un array de ids de los suarios que me siguen y los que sigo 
+        let followUserIds = await followService.followUserIds(req.user.id);
+
+
         return res.status(200).send({
             status:  "success",
             message: "Listado de usuarios que estoy siguiendo",
             user: req.user.id,
             follows: follows,
             userId:userId,
-            page:page
+            page:page,
+            user_following: followUserIds.following
     
         });
 
